@@ -139,7 +139,7 @@ curl http://localhost:8083/status/9fa9466...
 ```bash
 GET /status
 
-curl http://localhost:8083/status/a1b2c3d4
+curl http://localhost:8083/status
 ```
 
 **Ответ:**
