@@ -1,0 +1,24 @@
+server:
+  port: 8081
+  ssl:
+    enabled: false
+
+spring:
+  application:
+    name: file-uploader
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+app:
+  upload:
+    max-file-size: 5MB
+    allowed-extensions: xls,xlsx
+
+logging:
+  level:
+    com.firestarter.fileuploader: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.web.multipart: TRACE

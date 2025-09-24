@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: file-uploader
+  profiles:
+    active: local
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    config:
+      username: admin
+      password: password
+      fail-fast: true

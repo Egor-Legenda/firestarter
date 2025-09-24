@@ -1,0 +1,29 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: file-status-processor
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: file-status-processor-group
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "*"
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/firestarter
+  cloud:
+    config:
+      uri: http://localhost:8888
+      username: admin
+      password: password
+
+logging:
+  level:
+    com.firestarter: DEBUG
