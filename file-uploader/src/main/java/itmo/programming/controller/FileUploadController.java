@@ -40,6 +40,18 @@ public class FileUploadController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         String fileHash = null;
+        try {
+            fileHash = generateFileHash(file);
+        } catch (IOException e) {
+            log.error("Failed to read file for hashing: {}", e.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse("INTERNAL_ERROR", "Failed to process file"));
+        } catch (NoSuchAlgorithmException e) {
+            log.error("Hashing algorithm not found: {}", e.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body(new ErrorResponse("INTERNAL_ERROR", "Server configuration error"));
+        }
+
 
         try {
             log.info("File upload started: {}", file.getOriginalFilename());
@@ -48,7 +60,6 @@ public class FileUploadController {
             validationService.validateFile(file);
 
             // 2. Отправка статуса "файл принят"
-            fileHash = generateFileHash(file);
             sendStatusEvent(fileHash, file.getOriginalFilename(), Status.RECEIVED, null);
 
             // 3. Отправка статуса "первичная валидация успешна"
@@ -62,9 +73,9 @@ public class FileUploadController {
 
         } catch (FileValidationException e) {
             log.error("Validation failed for file: {}", e.getMessage());
-            if (fileHash != null) {
-                sendStatusEvent(fileHash, file.getOriginalFilename(), Status.PRIMARY_VALIDATION_FAILED, e.getMessage());
-            }
+
+            sendStatusEvent(fileHash, file.getOriginalFilename(), Status.PRIMARY_VALIDATION_FAILED, e.getMessage());
+
 
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse("VALIDATION_ERROR", e.getMessage()));
@@ -72,9 +83,7 @@ public class FileUploadController {
         } catch (Exception e) {
             log.error("Internal error during file upload: {}", e.getMessage());
 
-            if (fileHash != null) {
-                sendStatusEvent(fileHash, file.getOriginalFilename(), Status.UPLOAD_ERROR, e.getMessage());
-            }
+            sendStatusEvent(fileHash, file.getOriginalFilename(), Status.UPLOAD_ERROR, e.getMessage());
 
             return ResponseEntity.internalServerError()
                     .body(new ErrorResponse("INTERNAL_ERROR", "File processing failed"));

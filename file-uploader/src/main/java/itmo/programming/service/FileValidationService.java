@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileValidationService {
 
-    @Value("${app.upload.max-file-size:5MB}")
+    @Value("${app.upload.max-file-size}")
     private String maxFileSize;
 
     @Value("${app.upload.allowed-extensions}")
@@ -80,7 +80,31 @@ public class FileValidationService {
      * @return размер в байтах
      */
     private long parseSize(String size) {
-        long sizeInt = Long.parseLong(size.split("")[0]);
-        return sizeInt * 1024 * 1024;
+        if (size == null || size.isEmpty()) {
+            throw new IllegalArgumentException("Size string is null or empty");
+        }
+
+        size = size.trim().toUpperCase();
+
+        long multiplier;
+        if (size.endsWith("KB")) {
+            multiplier = 1024L;
+            size = size.substring(0, size.length() - 2);
+        } else if (size.endsWith("MB")) {
+            multiplier = 1024L * 1024L;
+            size = size.substring(0, size.length() - 2);
+        } else if (size.endsWith("GB")) {
+            multiplier = 1024L * 1024L * 1024L;
+            size = size.substring(0, size.length() - 2);
+        } else {
+            throw new IllegalArgumentException("Format size invalid: " + size);
+        }
+
+        try {
+            double value = Double.parseDouble(size.trim());
+            return (long)(value * multiplier);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Number invalid: " + size, e);
+        }
     }
 }
