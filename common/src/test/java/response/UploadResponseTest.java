@@ -160,11 +160,11 @@ class UploadResponseTest {
         String originalStatus = "originalStatus";
         UploadResponse uploadResponse = new UploadResponse(originalHash, originalStatus);
 
-        // When - изменяем оригинальные строки
+        // When
         originalHash = "modifiedHash";
         originalStatus = "modifiedStatus";
 
-        // Then - поля объекта не должны измениться
+        // Then
         assertThat(uploadResponse.getFileHash()).isEqualTo("originalHash");
         assertThat(uploadResponse.getStatus()).isEqualTo("originalStatus");
     }
@@ -217,7 +217,6 @@ class UploadResponseTest {
         assertThat(response1.equals(response2)).isTrue();
         assertThat(response1.hashCode() == response2.hashCode()).isTrue();
 
-        // При изменении объекта хэш-код должен измениться
         response2.setStatus("NEW_STATUS");
         assertThat(response1.equals(response2)).isFalse();
         assertThat(response1.hashCode() == response2.hashCode()).isFalse();

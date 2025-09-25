@@ -226,12 +226,12 @@ class StatusEventTest {
         StatusEvent statusEvent = new StatusEvent(originalHash, Status.PRIMARY_VALIDATION_SUCCESS, originalFileName,
                 LocalDateTime.now(), originalErrorMessage);
 
-        // When - изменяем оригинальные строки
+        // When
         originalHash = "modifiedHash";
         originalFileName = "modifiedFile.txt";
         originalErrorMessage = "modified error";
 
-        // Then - поля объекта не должны измениться
+        // Then
         assertThat(statusEvent.getFileHash()).isEqualTo("originalHash");
         assertThat(statusEvent.getFileName()).isEqualTo("originalFile.txt");
         assertThat(statusEvent.getErrorMessage()).isEqualTo("original error");
